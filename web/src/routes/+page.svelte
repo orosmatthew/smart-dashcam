@@ -1,5 +1,5 @@
 <script lang="ts">
-    import 'bootstrap-dark-5/dist/css/bootstrap-night.css';
+    import 'bootstrap-dark-5/dist/css/bootstrap-night.min.css';
     import Counter from '$lib/Counter.svelte';
     import VideoPlayer from '$lib/VideoPlayer.svelte';
     import { browser } from '$app/environment';
