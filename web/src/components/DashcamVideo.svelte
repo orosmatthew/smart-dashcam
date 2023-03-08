@@ -4,9 +4,11 @@
     let thumbnail: string;
     let url: string;
     let type: string;
+    let player: VideoPlayer;
 
     let ready: boolean = false;
     let error: boolean = false;
+    let time = 0;
 
     fetch("//localhost:3001/video")
         .then((response) => response.json())
@@ -22,7 +24,16 @@
 </script>
 
 {#if ready}
-    <VideoPlayer {thumbnail} {url} {type} />
+    <VideoPlayer
+        bind:this={player}
+        on:timeChange={(e) => {
+            time = e.detail;
+        }}
+        {thumbnail}
+        {url}
+        {type}
+    />
+    <p>{time}</p>
 {:else if error}
     <div class="alert alert-danger" role="alert">Failed to fetch video</div>
 {:else}
