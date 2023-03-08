@@ -12,8 +12,9 @@
   "dependencies": {
     "@astrojs/svelte": "^2.1.0",
     "@forevolve/bootstrap-dark": "^4.0.0",
+    "@vime/core": "^5.4.0",
+    "@vime/svelte": "^5.4.0",
     "astro": "^2.1.0",
-    "bootstrap": "^5.2.3",
     "svelte": "^3.55.1"
   },
   "devDependencies": {

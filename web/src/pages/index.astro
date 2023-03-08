@@ -1,6 +1,7 @@
 ---
 import "@forevolve/bootstrap-dark/dist/css/bootstrap-dark.min.css";
 import Counter from "../components/Counter.svelte";
+import VideoPlayer from "../components/VideoPlayer.svelte";
 ---
 
 <html lang="en">
@@ -9,10 +10,18 @@ import Counter from "../components/Counter.svelte";
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
-        <title>Astro</title>
+        <title>Smart Dashcam</title>
     </head>
     <body class="container mt-2">
         <h1>Smart Dashcam</h1>
         <Counter client:load />
+        <div class="mt-4">
+            <VideoPlayer
+                thumbnail="https://media.vimejs.com/poster.png"
+                url="https://media.vimejs.com/720p.mp4"
+                type="video/mp4"
+                client:only
+            />
+        </div>
     </body>
 </html>
