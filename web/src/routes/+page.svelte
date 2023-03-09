@@ -3,10 +3,11 @@
     import VideoPlayer from '$lib/VideoPlayer.svelte';
     import { browser } from '$app/environment';
     import { page } from '$app/stores';
+    import type { Video } from './+page.server';
 
-    let thumbnail = $page.data.video.thumbnail;
-    let url = $page.data.video.url;
-    let type = $page.data.video.type;
+    let videos: Video[] = $page.data.videos;
+
+    let currentVideo: Video;
 </script>
 
 <svelte:head>
@@ -20,8 +21,20 @@
         <a href="/login">Demo login page</a>
     </div>
     <div class="mt-4">
-        {#if browser && url}
-            <VideoPlayer {thumbnail} {url} {type} />
+        {#each videos as video}
+            <button
+                class="m-1 btn btn-secondary"
+                on:click={() => {
+                    currentVideo = video;
+                }}>{video.url}</button
+            >
+        {/each}
+        {#if browser && currentVideo}
+            <VideoPlayer
+                thumbnail={currentVideo.thumbnail}
+                url={currentVideo.url}
+                type={currentVideo.type}
+            />
         {:else}
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
