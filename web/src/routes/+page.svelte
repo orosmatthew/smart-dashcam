@@ -1,5 +1,4 @@
 <script lang="ts">
-    import 'bootstrap-dark-5/dist/css/bootstrap-night.min.css';
     import Counter from '$lib/Counter.svelte';
     import VideoPlayer from '$lib/VideoPlayer.svelte';
     import { browser } from '$app/environment';
@@ -32,6 +31,9 @@
 <body class="container mt-2">
     <h1>Smart Dashcam</h1>
     <Counter />
+    <div class="mt-3">
+        <a href="/login">Demo login page</a>
+    </div>
     <div class="mt-4">
         {#if browser && videoDataReady}
             <VideoPlayer {thumbnail} {url} {type} />
