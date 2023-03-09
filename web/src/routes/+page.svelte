@@ -2,26 +2,11 @@
     import Counter from '$lib/Counter.svelte';
     import VideoPlayer from '$lib/VideoPlayer.svelte';
     import { browser } from '$app/environment';
+    import { page } from '$app/stores';
 
-    let videoDataReady = false;
-    let thumbnail: string;
-    let url: string;
-    let type: string;
-    let error: boolean;
-
-    if (browser) {
-        fetch('/video')
-            .then((response) => response.json())
-            .then((data) => {
-                thumbnail = data.video.thumbnail;
-                url = data.video.url;
-                type = data.video.type;
-                videoDataReady = true;
-            })
-            .catch(() => {
-                error = true;
-            });
-    }
+    let thumbnail = $page.data.video.thumbnail;
+    let url = $page.data.video.url;
+    let type = $page.data.video.type;
 </script>
 
 <svelte:head>
@@ -35,10 +20,8 @@
         <a href="/login">Demo login page</a>
     </div>
     <div class="mt-4">
-        {#if browser && videoDataReady}
+        {#if browser && url}
             <VideoPlayer {thumbnail} {url} {type} />
-        {:else if browser && error}
-            <div class="alert alert-danger" role="alert">Failed to load video</div>
         {:else}
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
