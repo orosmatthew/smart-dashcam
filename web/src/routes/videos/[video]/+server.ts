@@ -2,10 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import type { RequestHandler } from './$types';
 import { VIDEO_DIR } from '$env/static/private';
-import { json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
-export const GET = (async ({ params }) => {
-  const videoFileName = params.video;
+export const GET = (async (event) => {
+  const videoFileName = event.params.video;
 
   try {
     const filePath = path.join(VIDEO_DIR, videoFileName);
@@ -34,6 +34,6 @@ export const GET = (async ({ params }) => {
       }
     });
   } catch (err) {
-    return json({ status: 404 });
+    throw error(404, 'video not found');
   }
 }) satisfies RequestHandler;
