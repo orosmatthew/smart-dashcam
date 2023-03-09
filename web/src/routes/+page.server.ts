@@ -3,11 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const videoQuery = await prisma.video.findMany();
-
 export const load = (async () => {
-    let data = videoQuery;
-    return { videos: data };
+  let data = await prisma.video.findMany({ where: { public: { equals: true } } });
+  return { videos: data };
 }) satisfies PageServerLoad;
-
-export type Video = typeof videoQuery;
