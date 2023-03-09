@@ -8,6 +8,8 @@
     let thumbnail: string;
     let url: string;
     let type: string;
+    let error: boolean;
+
     if (browser) {
         fetch('/video')
             .then((response) => response.json())
@@ -16,6 +18,9 @@
                 url = data.video.url;
                 type = data.video.type;
                 videoDataReady = true;
+            })
+            .catch(() => {
+                error = true;
             });
     }
 </script>
@@ -30,6 +35,12 @@
     <div class="mt-4">
         {#if browser && videoDataReady}
             <VideoPlayer {thumbnail} {url} {type} />
+        {:else if browser && error}
+            <div class="alert alert-danger" role="alert">Failed to load video</div>
+        {:else}
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         {/if}
     </div>
 </body>
