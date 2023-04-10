@@ -62,7 +62,7 @@
             class="video-btn list-group-item list list-group-item-action"
             on:click={() => {
               $currentVideo = video;
-            }}>{video.friendly}</button
+            }}>{video.friendly ? video.friendly : video.url}</button
           >
         {/each}
       </div>

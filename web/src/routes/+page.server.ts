@@ -1,9 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '$lib/db';
 
 export const load = (async () => {
-  let data = await prisma.video.findMany({ where: { public: { equals: true } } });
+  let data = await db.video.findMany({ where: { public: { equals: true } } });
   return { videos: data };
 }) satisfies PageServerLoad;
