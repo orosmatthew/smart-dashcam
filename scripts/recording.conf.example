@@ -1,0 +1,3 @@
+[config]
+videos_path = /path/to/videos/
+web_url = http://url/to/videos/endpoint

@@ -3,6 +3,15 @@ import os
 import signal
 import RPi.GPIO as GPIO
 import time
+from configparser import RawConfigParser
+import shutil
+import requests
+import json
+
+config = RawConfigParser()
+config.read("recording.conf")
+videos_path = config['config']['videos_path']
+web_url = config['config']['web_url']
 
 is_recording = False
 
@@ -21,6 +30,19 @@ def convert_mp4():
 	if os.path.exists("out/output.mp4"):
 		os.remove("out/output.mp4")
 	subprocess.run(["ffmpeg", "-i", "out/output.h264", "-c:v", "copy", "out/output.mp4"])
+
+def copy_output():
+	global filename
+	filename = time.strftime('%Y%m%d-%H%M%S') + '.mp4'
+	shutil.copyfile("out/output.mp4", os.path.join(videos_path, filename))
+
+def post():
+	global filename
+	data = {
+		"filename": filename
+	}
+	response = requests.post(web_url, data=json.dumps(data), headers={'Content-type': 'application/json'})
+	print(response)
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -46,6 +68,12 @@ while True:
 			print("Converting...")
 			convert_mp4()
 			print("Converting finished")
+			print("Copying output...")
+			copy_output()
+			print("Copied output")
+			print("Posting...")
+			post()
+			print("Posted")
 			is_recording = False
 		time.sleep(2)
 		continue
