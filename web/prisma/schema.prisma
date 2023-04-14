@@ -15,3 +15,18 @@ model Video {
   type      String
   public    Boolean @default(false)
 }
+
+model IMU {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime
+  gyroX     Float
+  gyroY     Float
+  gyroZ     Float
+  accelY    Float
+  accelZ    Float
+  accelX    Float
+  magX      Float
+  magY      Float
+  magZ      Float
+  temp      Float
+}
