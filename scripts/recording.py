@@ -9,9 +9,9 @@ import requests
 import json
 
 config = RawConfigParser()
-config.read("recording.conf")
-videos_path = config['config']['videos_path']
-web_url = config['config']['web_url']
+config.read("config.conf")
+videos_path = config['recording']['videos_path']
+web_url = config['recording']['web_url']
 
 is_recording = False
 

@@ -1,0 +1,6 @@
+[recording]
+videos_path = /path/to/videos
+web_url = http://127.0.0.1/videos
+
+[imu]
+web_url= http://127.0.0.1/api/imu
