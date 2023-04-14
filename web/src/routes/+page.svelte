@@ -9,6 +9,9 @@
   import type { PageData } from './$types';
   import { currentVideo } from './stores';
   import { onMount } from 'svelte';
+  import Chart from 'chart.js/auto';
+  import 'chartjs-adapter-date-fns';
+  import type { ImuGetData } from './api/imu/+server';
 
   export let data: PageData;
 
@@ -23,9 +26,65 @@
     });
   }
 
+  let imuData: ImuGetData;
+  async function updateChartImuData() {
+    let res = await fetch('/api/imu', { method: 'GET' });
+    imuData = (await res.json()).data;
+    chart.data.labels = imuData.map((row) => row.timestamp);
+    chart.data.datasets[0].data = imuData.map((row) => row.accelX);
+    chart.data.datasets[1].data = imuData.map((row) => row.accelY);
+    chart.data.datasets[2].data = imuData.map((row) => row.accelZ);
+    chart.update();
+  }
+
+  let chart: Chart;
+  function createChart() {
+    Chart.defaults.borderColor = '#777777';
+    Chart.defaults.color = '#E1E1E1';
+    chart = new Chart(document.getElementById('chart') as HTMLCanvasElement, {
+      type: 'line',
+      options: {
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'second'
+            }
+          }
+        }
+      },
+      data: {
+        labels: imuData.map((row) => row.timestamp),
+        datasets: [
+          {
+            label: 'Acceleration (X)',
+            data: imuData.map((row) => row.accelX),
+            cubicInterpolationMode: 'monotone'
+          },
+          {
+            label: 'Acceleration (Y)',
+            data: imuData.map((row) => row.accelY),
+            cubicInterpolationMode: 'monotone'
+          },
+          {
+            label: 'Acceleration (Z)',
+            data: imuData.map((row) => row.accelZ),
+            cubicInterpolationMode: 'monotone'
+          }
+        ]
+      }
+    });
+    window.addEventListener('resize', () => {
+      chart.resize();
+    });
+  }
+
   let mounted = false;
-  onMount(() => {
+  onMount(async () => {
     mounted = true;
+    imuData = data.imu;
+    createChart();
+    setInterval(updateChartImuData, 5000);
   });
 
   $: if (browser && $currentVideo && mounted) {
@@ -67,5 +126,9 @@
         {/each}
       </div>
     </div>
+  </div>
+  <div>
+    <h2>Chart</h2>
+    <div style="width: 100%"><canvas id="chart" /></div>
   </div>
 </body>

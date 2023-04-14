@@ -25,3 +25,22 @@ export const POST = (async (event) => {
   await db.iMU.create({ data: result.data });
   return json({ success: true });
 }) satisfies RequestHandler;
+
+export type ImuGetData = {
+  timestamp: Date;
+  gyroX: number;
+  gyroY: number;
+  gyroZ: number;
+  accelY: number;
+  accelZ: number;
+  accelX: number;
+  magX: number;
+  magY: number;
+  magZ: number;
+  temp: number;
+}[];
+
+export const GET = (async (event) => {
+  let query: ImuGetData = await db.iMU.findMany();
+  return json({ success: true, data: query });
+}) satisfies RequestHandler;
