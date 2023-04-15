@@ -15,7 +15,7 @@ sensor = adafruit_lsm9ds1.LSM9DS1_I2C(i2c)
 
 while True:
 
-    now = datetime.now()
+    now = datetime.utcnow()
     microseconds = (now.microsecond // 100) * 100
     now = now.replace(microsecond=microseconds)
     formatted_time = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
