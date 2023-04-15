@@ -18,7 +18,7 @@ model Video {
 
 model IMU {
   id        Int      @id @default(autoincrement())
-  timestamp DateTime
+  timestamp DateTime @unique
   gyroX     Float
   gyroY     Float
   gyroZ     Float

@@ -11,7 +11,7 @@
   import { onMount } from 'svelte';
   import Chart from 'chart.js/auto';
   import 'chartjs-adapter-date-fns';
-  import type { ImuGetData } from './api/imu/+server';
+  import type { ImuGetData } from './api/imu/[start]/[end]/+server';
 
   export let data: PageData;
 
@@ -28,8 +28,14 @@
 
   let imuData: ImuGetData;
   async function updateChartImuData() {
-    let res = await fetch('/api/imu', { method: 'GET' });
-    imuData = (await res.json()).data;
+    let imuRes = await fetch(
+      '/api/imu/' +
+        encodeURI(new Date(new Date().valueOf() - 1 * 60000).toJSON()) +
+        '/' +
+        encodeURI(new Date().toJSON()),
+      { method: 'GET' }
+    );
+    let imuData: ImuGetData = (await imuRes.json()).data;
     chart.data.labels = imuData.map((row) => row.timestamp);
     chart.data.datasets[0].data = imuData.map((row) => row.accelX);
     chart.data.datasets[1].data = imuData.map((row) => row.accelY);
