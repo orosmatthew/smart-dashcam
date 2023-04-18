@@ -5,6 +5,7 @@ import { db } from '$lib/db';
 import path from 'path';
 
 const videoPostData = z.object({
+  timestamp: z.string().datetime(),
   filename: z.string()
 });
 
@@ -14,7 +15,12 @@ export const POST = (async (event) => {
     throw error(400, 'Invalid request');
   } else {
     await db.video.create({
-      data: { url: path.join('/videos', result.data.filename), type: 'video/mp4', public: true }
+      data: {
+        timestamp: result.data.timestamp,
+        url: path.join('/videos', result.data.filename),
+        type: 'video/mp4',
+        public: true
+      }
     });
   }
   return json({ success: true });

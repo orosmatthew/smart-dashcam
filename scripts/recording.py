@@ -7,6 +7,7 @@ from configparser import RawConfigParser
 import shutil
 import requests
 import json
+from datetime import datetime
 
 config = RawConfigParser()
 config.read("config.conf")
@@ -14,6 +15,7 @@ videos_path = config['recording']['videos_path']
 web_url = config['recording']['web_url']
 
 is_recording = False
+formatted_time = ""
 
 def start_libcamera_vid():
 	if os.path.exists("out/output.h264"):
@@ -38,7 +40,9 @@ def copy_output():
 
 def post():
 	global filename
+	global formatted_time
 	data = {
+		"timestamp": formatted_time,
 		"filename": filename
 	}
 	response = requests.post(web_url, data=json.dumps(data), headers={'Content-type': 'application/json'})
@@ -56,6 +60,10 @@ while True:
 	if (btn_val == False):
 		if is_recording == False:
 			print("Starting recording...")
+			now = datetime.utcnow()
+			microseconds = (now.microsecond // 100) * 100
+			now = now.replace(microsecond=microseconds)
+			formatted_time = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 			start_libcamera_vid()
 			print("Recording...")
 			GPIO.output(23, GPIO.HIGH)
