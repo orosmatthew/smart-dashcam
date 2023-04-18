@@ -41,8 +41,13 @@ def copy_output():
 def post():
 	global filename
 	global formatted_time
+	now = datetime.utcnow()
+	microseconds = (now.microsecond // 100) * 100
+	now = now.replace(microsecond=microseconds)
+	time_end = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 	data = {
-		"timestamp": formatted_time,
+		"timeBegin": formatted_time,
+		"timeEnd": time_end,
 		"filename": filename
 	}
 	response = requests.post(web_url, data=json.dumps(data), headers={'Content-type': 'application/json'})
