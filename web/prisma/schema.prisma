@@ -30,3 +30,8 @@ model IMU {
   magZ      Float
   temp      Float
 }
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @unique
+}
