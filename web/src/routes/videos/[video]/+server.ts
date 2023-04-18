@@ -12,27 +12,69 @@ export const GET = (async (event) => {
 
     await fs.promises.access(filePath, fs.constants.R_OK);
 
-    const videoStream = fs.createReadStream(filePath);
     const fileMime = 'video/mp4';
 
-    const stream = new ReadableStream({
-      start(controller) {
-        videoStream.on('data', (chunk) => {
-          controller.enqueue(chunk);
-        });
-        videoStream.on('end', () => {
-          controller.close();
-        });
-        videoStream.on('error', (err) => {
-          controller.error(err);
-        });
-      }
-    });
-    return new Response(stream, {
-      headers: {
-        'content-type': fileMime
-      }
-    });
+    const stats = await fs.promises.stat(filePath);
+    const fileSize = stats.size;
+
+    const range = event.request.headers.get('range');
+    if (range) {
+      const [start, end] = range.replace(/bytes=/, '').split('-');
+      const startRange = parseInt(start, 10);
+      const endRange = end ? parseInt(end, 10) : fileSize - 1;
+      const contentLength = endRange - startRange + 1;
+
+      const videoStream = fs.createReadStream(filePath, { start: startRange, end: endRange });
+
+      const stream = new ReadableStream({
+        start(controller) {
+          videoStream.on('data', (chunk) => {
+            controller.enqueue(chunk);
+          });
+          videoStream.on('end', () => {
+            controller.close();
+          });
+          videoStream.on('error', (err) => {
+            controller.error(err);
+          });
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': fileMime,
+          'Content-Range': `bytes ${startRange}-${endRange}/${fileSize}`,
+          'Content-Length': contentLength.toString(),
+          'Accept-Ranges': 'bytes'
+        },
+        status: 206 // Partial content
+      });
+    } else {
+      const videoStream = fs.createReadStream(filePath);
+
+      const stream = new ReadableStream({
+        start(controller) {
+          videoStream.on('data', (chunk) => {
+            controller.enqueue(chunk);
+          });
+          videoStream.on('end', () => {
+            controller.close();
+          });
+          videoStream.on('error', (err) => {
+            controller.error(err);
+          });
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': fileMime,
+          'Content-Length': fileSize.toString(),
+          'Accept-Ranges': 'bytes'
+        },
+        status: 200 // OK
+      });
+    }
   } catch (err) {
     throw error(404, 'video not found');
   }

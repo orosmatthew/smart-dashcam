@@ -13,7 +13,7 @@ export const GET = (async ({ params }) => {
   if (!startResult.success || !endResult.success) {
     throw error(400, 'Invalid request format');
   }
-  let query: BookmarkGetData = await db.iMU.findMany({
+  let query: BookmarkGetData = await db.bookmark.findMany({
     where: { timestamp: { gte: startResult.data, lte: endResult.data } }
   });
   return json({ success: true, data: query });

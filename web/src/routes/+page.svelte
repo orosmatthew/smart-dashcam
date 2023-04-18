@@ -8,6 +8,7 @@
   import type { PageData } from './$types';
   import { PageCategory, currentVideo, pageCategory } from './stores';
   import { onMount } from 'svelte';
+  import type { BookmarkGetData } from './api/bookmark/[start]/[end]/+server';
 
   export let data: PageData;
 
@@ -22,6 +23,15 @@
         element.classList.remove('active');
       }
     });
+  }
+
+  let bookmarksData: BookmarkGetData;
+  async function updateBookmarks(beginTime: Date, endTime: Date) {
+    let res = await fetch(
+      '/api/bookmark/' + encodeURI(beginTime.toJSON()) + '/' + encodeURI(endTime.toJSON()),
+      { method: 'GET' }
+    );
+    bookmarksData = (await res.json()).data;
   }
 
   let mounted = false;
@@ -52,11 +62,19 @@
           type="button"
           data-id={video.id}
           class="video-btn list-group-item list list-group-item-action"
-          on:click={() => {
+          on:click={async () => {
             $currentVideo = video;
+            await updateBookmarks(new Date(video.timeBegin), new Date(video.timeEnd));
           }}>{video.friendly ? video.friendly : video.url}</button
         >
       {/each}
+    </div>
+    <div>
+      {#if bookmarksData}
+        {#each bookmarksData as bookmark}
+          <p>{bookmark.timestamp}</p>
+        {/each}
+      {/if}
     </div>
   </div>
 </div>
