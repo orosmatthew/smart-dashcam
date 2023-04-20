@@ -16,6 +16,11 @@
       dispatch('timeChange', event.detail);
     });
   });
+
+  export function setTime(seconds: number) {
+    const player: any = document.querySelector('.player');
+    player.currentTime = seconds;
+  }
 </script>
 
 <vm-player class="player" autoplay controls>

@@ -14,6 +14,34 @@
 
   $pageCategory = PageCategory.Recordings;
 
+  function formatSeconds(seconds: number): string {
+    if (seconds < 60) {
+      return `${seconds} seconds`;
+    } else {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      if (remainingSeconds === 0) {
+        return `${minutes} minutes`;
+      } else {
+        return `${minutes} minutes, ${remainingSeconds} seconds`;
+      }
+    }
+  }
+
+  function formatDate(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    };
+
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+  }
+
   function updateVideoButtons() {
     document.querySelectorAll('.video-btn').forEach((element) => {
       const dataId = parseInt(element.getAttribute('data-id') || '');
@@ -42,6 +70,8 @@
   $: if (browser && $currentVideo && mounted) {
     updateVideoButtons();
   }
+
+  let videoPlayer: VideoPlayer;
 </script>
 
 <h2>Recordings</h2>
@@ -52,6 +82,7 @@
         thumbnail={$currentVideo.thumbnail || ''}
         url={$currentVideo.url}
         type={$currentVideo.type}
+        bind:this={videoPlayer}
       />
     {/if}
   </div>
@@ -65,15 +96,31 @@
           on:click={async () => {
             $currentVideo = video;
             await updateBookmarks(new Date(video.timeBegin), new Date(video.timeEnd));
-          }}>{video.friendly ? video.friendly : video.url}</button
+          }}>{formatDate(new Date(video.timeBegin))}</button
         >
       {/each}
     </div>
     <div>
-      {#if bookmarksData}
-        {#each bookmarksData as bookmark}
-          <p>{bookmark.timestamp}</p>
-        {/each}
+      {#if bookmarksData && bookmarksData.length != 0}
+        <h3 class="mt-3">Bookmarks</h3>
+        <div class="list-group">
+          {#each bookmarksData as bookmark}
+            <button
+              type="button"
+              class="list-group-item list list-group-item-action"
+              on:click={() => {
+                videoPlayer.setTime(
+                  new Date(bookmark.timestamp).getSeconds() -
+                    new Date($currentVideo.timeBegin).getSeconds()
+                );
+              }}
+              >{formatSeconds(
+                new Date(bookmark.timestamp).getSeconds() -
+                  new Date($currentVideo.timeBegin).getSeconds()
+              )}</button
+            >
+          {/each}
+        </div>
       {/if}
     </div>
   </div>
