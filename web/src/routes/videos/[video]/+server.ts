@@ -28,14 +28,21 @@ export const GET = (async (event) => {
 
       const stream = new ReadableStream({
         start(controller) {
+          let streamClosed = false;
           videoStream.on('data', (chunk) => {
             controller.enqueue(chunk);
           });
           videoStream.on('end', () => {
-            controller.close();
+            if (!streamClosed) {
+              streamClosed = true;
+              controller.close();
+            }
           });
           videoStream.on('error', (err) => {
-            controller.error(err);
+            if (!streamClosed) {
+              streamClosed = true;
+              controller.error(err);
+            }
           });
         }
       });
@@ -54,14 +61,21 @@ export const GET = (async (event) => {
 
       const stream = new ReadableStream({
         start(controller) {
+          let streamClosed = false;
           videoStream.on('data', (chunk) => {
             controller.enqueue(chunk);
           });
           videoStream.on('end', () => {
-            controller.close();
+            if (!streamClosed) {
+              streamClosed = true;
+              controller.close();
+            }
           });
           videoStream.on('error', (err) => {
-            controller.error(err);
+            if (!streamClosed) {
+              streamClosed = true;
+              controller.error(err);
+            }
           });
         }
       });
