@@ -69,6 +69,7 @@
 
   $: if (browser && $currentVideo && mounted) {
     updateVideoButtons();
+    updateBookmarks(new Date($currentVideo.timeBegin), new Date($currentVideo.timeEnd));
   }
 
   let videoPlayer: VideoPlayer;
